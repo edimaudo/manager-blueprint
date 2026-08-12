@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Manager Blueprint helps building better effective managers.">
+<title>Manager Blueprint — Become a better manager. Faster.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--scale:1;--blue:#1769d1;--blue-dark:#0b1f3a;--blue-soft:#eaf3ff;--text:#102033;--muted:#506176;--bg:#fff;--alt:#f5f8fc;--border:#d5deea;--focus:#0b63ce}
+[data-theme=dark]{--blue:#62a0ed;--blue-dark:#dcecff;--blue-soft:#173253;--text:#f2f6fb;--muted:#bdc9d8;--bg:#0c1420;--alt:#121d2b;--border:#314257;--focus:#8cc2ff}
+*{box-sizing:border-box}
+html{font-size:calc(16px * var(--scale));scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.container{width:min(1080px,calc(100% - 40px));margin:auto}
+nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.brand{font-weight:700;color:var(--blue);text-decoration:none}
+.controls{display:flex;gap:8px;align-items:center}
+button{font:inherit;cursor:pointer}
+.control,.sizes button{background:var(--bg);color:var(--text);border:1px solid var(--border);padding:8px 10px}
+.sizes{display:flex}.sizes button{border-right:0}.sizes button:last-child{border-right:1px solid var(--border)}.sizes button[aria-pressed=true]{background:var(--blue-soft);font-weight:700}
+.hero{padding:105px 0 90px;background:linear-gradient(var(--blue-soft),var(--bg))}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+h1,h2,h3{line-height:1.08;letter-spacing:-.045em}
+h1{font-size:clamp(2.7rem,7vw,5.2rem);max-width:780px;margin:16px 0}
+h2{font-size:clamp(2rem,4vw,3.2rem)}
+.hero p{max-width:650px;color:var(--muted);font-size:1.15rem}
+.button{display:inline-block;margin-top:14px;padding:12px 19px;border-radius:9px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700}
+section{padding:85px 0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{padding:28px;border:1px solid var(--border);border-radius:14px;background:var(--bg)}
+.card h3{color:var(--blue-dark);margin-top:0;text-transform:uppercase;font-size:1.1rem;letter-spacing:0.02em}
+.card p{color:var(--muted);margin-bottom:0}
+.alt{background:var(--alt);border-block:1px solid var(--border)}
+.center{text-align:center}
+.center h1{margin:16px auto}
+.center h2{margin:0 auto 40px}
+.center p{max-width:600px;margin:0 auto;color:var(--muted)}
+footer{padding:28px 0;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;text-align:center}
+@media(max-width:760px){nav{align-items:flex-start;padding:12px 0}.controls{flex-wrap:wrap;justify-content:flex-end}.grid{grid-template-columns:1fr}.hero{padding:70px 0}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><nav class="container" aria-label="Primary navigation">
+<a class="brand" href="#">MANAGER BLUEPRINT</a>
+<div class="controls">
+<button class="control" id="theme" type="button" aria-pressed="false">Dark mode</button>
+<div class="sizes" aria-label="Font size">
+<button data-size="small" aria-pressed="false">A−</button>
+<button data-size="medium" aria-pressed="true">A</button>
+<button data-size="large" aria-pressed="false">A+</button>
+</div></div></nav></header>
+
+<main>
+<section class="hero center"><div class="container">
+
+<h1>Become an effective manager.<br>Faster.</h1>
+<p>Learn. Practice. Improve.</p>
+<a class="button" href="#">Build Your Manager Blueprint</a>
+</div></section>
+
+<section><div class="container">
+<div class="center"><h2>Core Pillars</h2></div>
+<div class="grid">
+<article class="card">
+  <h3>Manage Yourself</h3>
+  <p>Prioritize. Decide. Communicate.</p>
+</article>
+<article class="card">
+  <h3>Manage Others</h3>
+  <p>Lead. Coach. Delegate.</p>
+</article>
+<article class="card">
+  <h3>Manage Up</h3>
+  <p>Influence. Align. Communicate.</p>
+</article>
+</div>
+</div></section>
+
+<section class="alt center"><div class="container">
+<h2>Effective Management.<br>Your Blueprint.</h2>
+<p>Build the right skills that matter.</p>
+<a class="button" href="#">Build Your Manager Blueprint</a>
+</div></section>
+</main>
+
+<footer><div class="container">Manager Blueprint</div></footer>
+<script>
+const r=document.documentElement,t=document.getElementById("theme"),b=document.querySelectorAll("[data-size]");
+function theme(v){r.dataset.theme=v;t.textContent=v==="dark"?"Light mode":"Dark mode";t.setAttribute("aria-pressed",v==="dark");localStorage.setItem("theme",v)}
+function size(v){r.style.setProperty("--scale",{small:.875,medium:1,large:1.125}[v]);b.forEach(x=>x.setAttribute("aria-pressed",x.dataset.size===v));localStorage.setItem("size",v)}
+theme(localStorage.getItem("theme")||"light");size(localStorage.getItem("size")||"medium");
+t.onclick=()=>theme(r.dataset.theme==="dark"?"light":"dark");b.forEach(x=>x.onclick=()=>size(x.dataset.size));
+</script>
+</body></html>
