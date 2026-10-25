@@ -1,0 +1,10 @@
+begin;
+select plan(6);
+select has_table('public','profiles','profiles table exists');
+select has_table('public','coaching_diary','diary table exists');
+select has_table('public','baseline_assessments','baseline assessments table exists');
+select has_table('public','documents','documents table exists');
+select ok((select relrowsecurity from pg_class where oid='public.coaching_diary'::regclass),'coaching diary has RLS enabled');
+select ok((select relrowsecurity from pg_class where oid='public.documents'::regclass),'documents have RLS enabled');
+select * from finish();
+rollback;
