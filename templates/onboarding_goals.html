@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Goals and challenges | Manager Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css"><script defer src="/static/js/app.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">Manager Blueprint</a><div class="controls">
+  <button type="button" data-theme-toggle aria-pressed="false">Dark mode</button>
+  <div class="sizes" role="group" aria-label="Text size"><button type="button" data-size="small" aria-label="Small text">A−</button><button type="button" data-size="medium" aria-label="Medium text" aria-pressed="true">A</button><button type="button" data-size="large" aria-label="Large text">A+</button></div>
+</div></header>
+<main class="container">
+  <section class="page-head">
+    <div class="progress" role="progressbar" aria-label="Onboarding progress" aria-valuemin="0" aria-valuemax="3" aria-valuenow="2"><span style="width:66.667%"></span></div>
+    <h1>What would you like to develop?</h1>
+    <p>Select the management situations you want to improve. Choose the areas that matter most in your current role. Your selections will help shape your starting recommendations.</p>
+  </section>
+  <form method="post" action="/onboarding/goals">
+    {% for domain,items in goals.items() %}
+    <section class="panel">
+      <h2>{% if domain=='yourself' %}Managing Yourself{% elif domain=='others' %}Managing Others{% else %}Managing Up{% endif %}</h2>
+      <div class="grid two-col">
+        {% for item in items %}
+        <label class="choice"><input type="checkbox" name="goal::{{ domain }}::{{ item }}" value="on"><span>{{ item }}</span></label>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+    <button class="button" type="submit">Continue to assessment</button>
+  </form>
+</main>
+</body>
+</html>

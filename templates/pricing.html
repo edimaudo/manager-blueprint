@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Access options | Manager Blueprint{% endblock %}
+{% block content %}
+<section class="page-head">
+  <h1>Choose how you want to access your development resources</h1>
+  <p>Start with free access, purchase individual resources, or subscribe for ongoing development capabilities. These options are independent. You do not need to make a one-time purchase before subscribing.</p>
+</section>
+{% if request.query_params.get('cancelled') %}<p class="notice" role="status">Checkout was cancelled. No payment was taken.</p>{% endif %}
+
+<section class="grid three-col" aria-label="Access paths">
+  <article class="tool-card">
+    <h2>Start Free</h2>
+    <p>Build your personalized Manager Blueprint and use the free monthly resources.</p>
+    {% if user %}<a class="button" href="/blueprint">Continue with free access</a>{% else %}<a class="button" href="/signup">Create a free account</a>{% endif %}
+  </article>
+  <article class="tool-card">
+    <h2>Buy What You Need</h2>
+    <p>Purchase an individual management toolkit and keep access to it permanently.</p>
+    <a class="button secondary" href="#one-time">View individual toolkits</a>
+  </article>
+  <article class="tool-card">
+    <h2>Go Further</h2>
+    <p>Subscribe for additional management resources and development capabilities.</p>
+    <a class="button secondary" href="#subscriptions">View subscriptions</a>
+  </article>
+</section>
+
+<section class="panel" id="one-time">
+  <h2>Individual one-time purchases</h2>
+  <p>One-time purchases will remain independent of subscriptions. A purchased resource will be available according to its defined entitlement once billing is activated.</p>
+  <div class="grid two-col">
+    {% for key in ['delegation_toolkit','feedback_toolkit','stakeholder_toolkit','performance_toolkit'] %}
+      {% set p=products[key] %}
+      <article class="tool-card">
+        <h3>{{ p.name }}</h3>
+        
+        <p>{{ p.description }}</p>
+        <p class="muted">One-time purchases will be enabled after a payment provider is selected.</p><button class="button secondary" type="button" disabled>Not available yet</button>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel" id="subscriptions">
+  <h2>Subscriptions</h2>
+  <p>Recurring access to subscription capabilities. The subscription path will remain available independently of individual toolkit purchases.</p>
+  <div class="grid two-col">
+    {% set plus=products['manager_plus'] %}
+    <article class="tool-card">
+      <h3>Manager Plus</h3>
+      
+      <ul>
+        <li>Complete the management assessment</li>
+        <li>Everything in free access</li>
+        <li>Access to up to three tools or templates per month</li>
+        <li>Tailored articles</li>
+      </ul>
+      <p class="muted">Subscriptions will be enabled after a payment provider is selected.</p><button class="button" type="button" disabled>Not available yet</button>
+    </article>
+    {% set pro=products['manager_pro'] %}
+    <article class="tool-card">
+      <h3>Manager Pro</h3>
+      
+      <ul>
+        <li>AI Manager Coach</li>
+        <li>AI role play</li>
+        <li>Personalized feedback</li>
+        <li>Ongoing development support</li>
+      </ul>
+      <p class="muted">Subscriptions will be enabled after a payment provider is selected.</p><button class="button secondary" type="button" disabled>Not available yet</button>
+    </article>
+  </div>
+</section>
+{% if user %}<p><a href="/account/billing">View your purchases, subscriptions, and access</a></p>{% else %}<p>Already have an account? <a href="/login">Sign in</a>.</p>{% endif %}
+{% endblock %}

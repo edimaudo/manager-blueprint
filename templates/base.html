@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Manager Blueprint{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css">
+  <script defer src="/static/js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="{% if user %}/blueprint{% else %}/{% endif %}">Manager Blueprint</a>
+  <nav aria-label="Main navigation">
+    {% if user %}<a href="/blueprint" {% if request.url.path == '/blueprint' %}aria-current="page"{% endif %}>Your Blueprint</a>{% endif %}
+  </nav>
+  <div class="controls">
+    <button type="button" data-theme-toggle aria-pressed="false">Dark mode</button>
+    <div class="sizes" role="group" aria-label="Text size">
+      <button type="button" data-size="small" aria-pressed="false" aria-label="Small text">A−</button>
+      <button type="button" data-size="medium" aria-pressed="true" aria-label="Medium text">A</button>
+      <button type="button" data-size="large" aria-pressed="false" aria-label="Large text">A+</button>
+    </div>
+    {% if user %}
+      <form action="/logout" method="post"><button type="submit">Sign out</button></form>
+    {% else %}
+      <a href="/login">Sign in</a>
+    {% endif %}
+  </div>
+</header>
+<main class="container">{% block content %}{% endblock %}</main>
+</body>
+</html>

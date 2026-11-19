@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Billing and access | Manager Blueprint{% endblock %}
+{% block content %}
+<section class="page-head"><h1>Billing and access</h1><p>Review purchased resources, subscription records and your current access.</p></section>
+<section class="panel notice" role="status"><strong>Online payments are not enabled yet.</strong><p>A payment provider has not been selected. No checkout, recurring charge or payment-method update can be initiated at this stage.</p></section>
+<section class="panel"><h2>Subscriptions</h2>{% if subscriptions %}{% for sub in subscriptions %}<article class="resource-card"><h3>{{ sub.product_key|replace('_',' ')|title }}</h3><p>Status: {{ sub.status }}{% if sub.cancel_at_period_end %} · Cancels at period end{% endif %}</p>{% if sub.current_period_end %}<p>Current period ends: {{ sub.current_period_end[:10] }}</p>{% endif %}</article>{% endfor %}{% else %}<p>You do not have a subscription record.</p>{% endif %}</section>
+<section class="panel"><h2>One-time purchases</h2>{% if purchases %}{% for purchase in purchases %}<article class="resource-card"><strong>{{ purchase.product_key|replace('_',' ')|title }}</strong><p>Status: {{ purchase.status }} · Purchased: {{ purchase.purchased_at[:10] }}</p></article>{% endfor %}{% else %}<p>You do not have any purchase records.</p>{% endif %}</section>
+<section class="panel"><h2>Current access</h2>{% if entitlements %}<ul>{% for item in entitlements %}<li>{{ item|replace('_',' ')|title }}</li>{% endfor %}</ul>{% else %}<p>No additional paid entitlements are currently active.</p>{% endif %}<a href="/pricing">View access options</a></section>
+{% endblock %}

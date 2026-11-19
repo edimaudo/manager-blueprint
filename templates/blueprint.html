@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Your Manager Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css">
+  <script defer src="/static/js/app.js"></script>
+  <script defer src="/static/js/blueprint-tabs.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/blueprint">Manager Blueprint</a>
+  <nav aria-label="Main navigation"><a href="/blueprint" aria-current="page">Your Blueprint</a></nav>
+  <div class="controls">
+    <button type="button" data-theme-toggle aria-pressed="false">Dark mode</button>
+    <div class="sizes" role="group" aria-label="Text size">
+      <button type="button" data-size="small" aria-pressed="false" aria-label="Small text">A−</button>
+      <button type="button" data-size="medium" aria-pressed="true" aria-label="Medium text">A</button>
+      <button type="button" data-size="large" aria-pressed="false" aria-label="Large text">A+</button>
+    </div>
+    <form action="/logout" method="post"><button type="submit">Sign out</button></form>
+  </div>
+</header>
+<main class="container">
+  <section class="page-head">
+    <h1>Your Manager Blueprint</h1>
+    <p>Your development plan brings together your management stage, goals, strengths, development opportunities, and progress. Use it to focus on the situations that matter in your role.</p>
+  </section>
+
+  <section class="panel soft" aria-labelledby="overview-title">
+    <div class="row-between">
+      <div>
+        <h2 id="overview-title">{{ profile.management_stage|default('Management stage not set')|replace('_',' ')|title }}</h2>
+        <p class="muted">{{ goals|length }} development goal{% if goals|length != 1 %}s{% endif %} selected</p>
+      </div>
+      <div>
+        <strong>{{ overall_progress }}% complete</strong>
+        <p class="muted">{{ completed_stages }} of {{ total_stages }} capability steps</p>
+      </div>
+    </div>
+    <div class="progress" role="progressbar" aria-label="Overall development progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ overall_progress }}"><span style="width:{{ overall_progress }}%"></span></div>
+    <div class="grid three-col">
+      <div><strong>Managing Yourself</strong><p class="muted">Personal effectiveness and judgement</p></div>
+      <div><strong>Managing Others</strong><p class="muted">Team leadership and development</p></div>
+      <div><strong>Managing Up</strong><p class="muted">Alignment, influence, and communication</p></div>
+    </div>
+  </section>
+
+  {% if recommendations %}
+  {% set next = recommendations[0] %}
+  <section class="panel" aria-labelledby="focus-title">
+    <div class="row-between">
+      <div>
+        <h2 id="focus-title">{{ next.title }}</h2>
+        <p class="muted">{{ next.domain_label }}</p>
+      </div>
+      <span class="step-state">{{ next.completed }} of 4 steps complete</span>
+    </div>
+    <p>{{ next.summary }}</p>
+    <p><strong>Next activity: {{ next.next_step_label }}</strong></p>
+    <p class="muted">{{ next.next_step_description }}</p>
+    <a class="button" href="/capability/{{ next.slug }}">Continue with {{ next.title }}</a>
+  </section>
+  {% endif %}
+
+  {% if baseline %}
+  <section class="panel" aria-labelledby="starting-point-title">
+    <div class="row-between">
+      <div>
+        <h2 id="starting-point-title">Your starting point</h2>
+        <p class="muted">Completed {{ baseline.created_at[:10] }}. These are self-assessment results to guide development, not a performance rating.</p>
+      </div>
+      <a href="/onboarding/assessment">Review assessment</a>
+    </div>
+    <div class="grid three-col">
+      {% for key,value in baseline.result.domain_scores.items() %}
+      <article>
+        <h3>{% if key=='yourself' %}Managing Yourself{% elif key=='others' %}Managing Others{% else %}Managing Up{% endif %}</h3>
+        <p><strong>{{ value }} / 5</strong></p>
+        <div class="progress" role="progressbar" aria-label="{{ key }} self-assessment score" aria-valuemin="0" aria-valuemax="5" aria-valuenow="{{ value }}"><span style="width:{{ value*20 }}%"></span></div>
+      </article>
+      {% endfor %}
+    </div>
+    {% if baseline.result.capability_scores %}
+      <h3>Capability-level results</h3>
+      <p class="muted">Your 18 capability ratings are grouped by management domain. Scores reflect your self-reported starting point on a 1–5 scale.</p>
+      <div class="assessment-results-grid">
+      {% for domain,items in capabilities.items() %}
+        <section class="assessment-result-domain">
+          <h4>{% if domain=='yourself' %}Managing Yourself{% elif domain=='others' %}Managing Others{% else %}Managing Up{% endif %}</h4>
+          {% for item in items %}
+            {% if item.slug in baseline.result.capability_scores %}
+            <div class="assessment-score-row">
+              <span>{{ item.title }}</span>
+              <div class="progress" role="progressbar" aria-label="{{ item.title }} baseline score" aria-valuemin="0" aria-valuemax="5" aria-valuenow="{{ baseline.result.capability_scores[item.slug] }}"><span style="width:{{ baseline.result.capability_scores[item.slug]*20 }}%"></span></div>
+              <strong>{{ baseline.result.capability_scores[item.slug] }}/5</strong>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </section>
+      {% endfor %}
+      </div>
+    {% endif %}
+    {% if baseline.result.capability_strengths %}
+      <h3>Strengths to build on</h3>
+      <ul>
+      {% for slug in baseline.result.capability_strengths %}
+        {% for domain,items in capabilities.items() %}{% for item in items %}{% if item.slug==slug %}<li><a href="/capability/{{ item.slug }}">{{ item.title }}</a></li>{% endif %}{% endfor %}{% endfor %}
+      {% endfor %}
+      </ul>
+    {% endif %}
+    {% if baseline.result.development_opportunities %}
+      <h3>Development opportunities</h3>
+      <ul>
+      {% for slug in baseline.result.development_opportunities %}
+        {% for domain,items in capabilities.items() %}{% for item in items %}{% if item.slug==slug %}<li><a href="/capability/{{ item.slug }}">{{ item.title }}</a></li>{% endif %}{% endfor %}{% endfor %}
+      {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+  {% else %}
+  <section class="panel">
+    <h2>Establish your starting point</h2>
+    <p>Complete the management capability assessment to identify strengths and development opportunities across the three management domains.</p>
+    <a class="button" href="/onboarding/stage">Create your starting Blueprint</a>
+  </section>
+  {% endif %}
+
+  {% if style %}
+  <section class="panel" aria-labelledby="style-title">
+    <div class="row-between">
+      <div>
+        <h2 id="style-title">Your Manager Style Profile</h2>
+        <p class="muted">A reflection on behavioural preferences and contribution strengths.</p>
+      </div>
+      <a href="/style">Review profile</a>
+    </div>
+    <h3>{{ style.result.archetype }}</h3>
+    <p>{{ style.result.profile_summary }}</p>
+    <p class="muted">This is a developmental reflection, not an official DiSC or CliftonStrengths assessment.</p>
+  </section>
+  {% else %}
+  <section class="panel">
+    <h2>Your Manager Style Profile</h2>
+    <p>Explore your management tendencies and the strengths you may draw on in different situations.</p>
+    <a class="button secondary" href="/style">Complete Manager Style Profile</a>
+  </section>
+  {% endif %}
+
+  {% for domain,items in capabilities.items() %}
+  <section class="panel" aria-labelledby="domain-{{ domain }}">
+    <div class="row-between">
+      <div>
+        <h2 id="domain-{{ domain }}">{% if domain=='yourself' %}Managing Yourself{% elif domain=='others' %}Managing Others{% else %}Managing Up{% endif %}</h2>
+        <p class="muted">Build each capability through Learn, Apply, Practice, and Assess.</p>
+      </div>
+    </div>
+    <div class="grid three-col">
+      {% for item in items %}
+      <article class="tool-card">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.summary }}</p>
+        <div class="progress" role="progressbar" aria-label="{{ item.title }} development progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ item.percent }}"><span style="width:{{ item.percent }}%"></span></div>
+        <p class="muted">{{ item.completed }} of 4 steps complete{% if item.latest_score is not none %} · Self-rating {{ item.latest_score }} / 5{% endif %}</p>
+        <a href="/capability/{{ item.slug }}">Open capability</a>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+  <section class="panel" aria-labelledby="goals-title">
+    <div class="row-between">
+      <div>
+        <h2 id="goals-title">Your development goals</h2>
+        <p class="muted">Update your focus as your management responsibilities change.</p>
+      </div>
+      <a href="/onboarding/goals">Update goals</a>
+    </div>
+    {% if goals %}
+      {% for goal in goals %}
+      <article class="resource-row">
+        <div class="row-between">
+          <div>
+            <strong>{% if goal.capability_slug %}<a href="/capability/{{ goal.capability_slug }}">{{ goal.capability }}</a>{% else %}{{ goal.capability }}{% endif %}</strong>
+            <p class="muted">{{ goal.domain|replace('_',' ')|title }} · {{ goal.status|default('active')|replace('_',' ')|title }}</p>
+          </div>
+          <form method="post" action="/goals/{{ goal.id }}/update" class="inline-form">
+            <label for="goal-status-{{ goal.id }}">Status</label>
+            <select id="goal-status-{{ goal.id }}" name="status">
+              <option value="active" {% if goal.status|default('active')=='active' %}selected{% endif %}>Active</option>
+              <option value="on_hold" {% if goal.status=='on_hold' %}selected{% endif %}>On hold</option>
+              <option value="completed" {% if goal.status=='completed' %}selected{% endif %}>Completed</option>
+            </select>
+            <label for="goal-date-{{ goal.id }}">Target date</label>
+            <input id="goal-date-{{ goal.id }}" type="date" name="target_date" value="{{ goal.target_date or '' }}">
+            <button class="button secondary" type="submit">Update</button>
+          </form>
+        </div>
+      </article>
+      {% endfor %}
+    {% else %}
+      <p>No development goals selected yet.</p>
+      <a href="/onboarding/goals">Choose development goals</a>
+    {% endif %}
+  </section>
+
+  <section class="panel" aria-labelledby="actions-title">
+    <h2 id="actions-title">Your next actions</h2>
+    <p class="muted">Commitments from capability assessments, practice debriefs, and development reviews.</p>
+    {% if development_actions %}
+      {% for action in development_actions %}
+      <article class="resource-row">
+        <div class="row-between">
+          <div>
+            <strong><a href="/capability/{{ action.capability_slug }}">{{ action.title }}</a></strong>
+            <p class="muted">{{ action.source_type|title }} · {% if action.due_date %}Due {{ action.due_date }}{% else %}No due date{% endif %} · {{ action.status|replace('_',' ')|title }}</p>
+            {% if action.detail %}<p>{{ action.detail }}</p>{% endif %}
+          </div>
+          <form method="post" action="/development-actions/{{ action.id }}/update" class="action-status">
+            <label class="visually-hidden" for="action-status-{{ action.id }}">Action status</label>
+            <select id="action-status-{{ action.id }}" name="status">
+              <option value="open" {% if action.status=='open' %}selected{% endif %}>Open</option>
+              <option value="in_progress" {% if action.status=='in_progress' %}selected{% endif %}>In progress</option>
+              <option value="completed">Completed</option>
+              <option value="dismissed">Dismissed</option>
+            </select>
+            <label class="visually-hidden" for="action-date-{{ action.id }}">Action due date</label>
+            <input id="action-date-{{ action.id }}" type="date" name="due_date" value="{{ action.due_date or '' }}">
+            <button class="button secondary" type="submit">Save</button>
+          </form>
+        </div>
+      </article>
+      {% endfor %}
+    {% else %}
+      <p>No open development commitments. Complete a capability assessment or practise a management situation to create a next action.</p>
+    {% endif %}
+    {% if completed_actions %}
+      <details class="resource-row">
+        <summary>Recently completed actions</summary>
+        <ul>{% for action in completed_actions %}<li>{{ action.title }} <span class="muted">— completed {{ (action.completed_at or action.updated_at)[:10] }}</span></li>{% endfor %}</ul>
+      </details>
+    {% endif %}
+  </section>
+
+
+  <section class="panel" aria-labelledby="review-title">
+    <div class="row-between">
+      <div>
+        <h2 id="review-title">Development review</h2>
+        {% if last_review %}
+          <p class="muted">Last completed {{ last_review.created_at[:10] }} · Next review {{ last_review.next_review_on }}</p>
+          {% if last_review.next_focus %}<p><strong>Next focus:</strong> {{ last_review.next_focus }}</p>{% endif %}
+        {% else %}
+          <p class="muted">Review what has changed, what remains difficult, and where you will focus next.</p>
+        {% endif %}
+      </div>
+      {% if review_due %}<span class="step-state">Review due</span>{% endif %}
+    </div>
+    <a class="button secondary" href="/development/review">{% if last_review %}Open development review{% else %}Start development review{% endif %}</a>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Management assessment | Manager Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css"><script defer src="/static/js/app.js"></script><script defer src="/static/js/assessment-tabs.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">Manager Blueprint</a><div class="controls">
+  <button type="button" data-theme-toggle aria-pressed="false">Dark mode</button>
+  <div class="sizes" role="group" aria-label="Text size"><button type="button" data-size="small" aria-label="Small text">A−</button><button type="button" data-size="medium" aria-label="Medium text" aria-pressed="true">A</button><button type="button" data-size="large" aria-label="Large text">A+</button></div>
+</div></header>
+<main class="container">
+  <section class="page-head">
+    <div class="progress" role="progressbar" aria-label="Onboarding progress" aria-valuemin="0" aria-valuemax="3" aria-valuenow="3"><span style="width:100%"></span></div>
+    <h1>Set your management baseline</h1>
+    <p>Rate how consistently each statement describes your current management practice. Your answers identify strengths and development opportunities to guide your Blueprint. This is a self-assessment for development, not a performance rating.</p>
+  </section>
+  <form method="post" action="/onboarding/assessment" novalidate>
+    <section class="panel">
+      <p><strong>Rating scale</strong></p>
+      <p class="muted">Rate each statement from 1 (Rarely true) to 5 (Consistently true). Your responses are developmental self-reflection, not a performance rating.</p>
+      <div class="assessment-domain-tabs" role="tablist" aria-label="Assessment domains">
+        <button type="button" role="tab" aria-selected="true" data-domain-tab="yourself">Managing Yourself</button>
+        <button type="button" role="tab" aria-selected="false" data-domain-tab="others">Managing Others</button>
+        <button type="button" role="tab" aria-selected="false" data-domain-tab="up">Managing Up</button>
+      </div>
+      <div class="assessment-progress"><span id="assessment-count">0 of 18 answered</span><div class="progress" role="progressbar" aria-label="Assessment completion" aria-valuemin="0" aria-valuemax="18" aria-valuenow="0"><span id="assessment-progress-fill" style="width:0%"></span></div></div>
+      {% for domain,slug,question in questions %}
+        {% set q_index = loop.index %}
+        <fieldset class="question" data-assessment-domain="{{ domain }}">
+          <legend>{{ q_index }}. {{ question }}</legend>
+          <div class="grid five-choice">
+            {% for n in range(1,6) %}
+            <label class="choice"><input type="radio" name="q{{ q_index }}" value="{{ n }}" required><span>{{ n }}</span></label>
+            {% endfor %}
+          </div>
+        </fieldset>
+      {% endfor %}
+      <button class="button" type="submit">Create my Manager Blueprint</button>
+    </section>
+  </form>
+</main>
+</body>
+</html>

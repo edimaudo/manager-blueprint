@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sign in | Manager Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/app.css"><script defer src="/static/js/app.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">Manager Blueprint</a><div class="controls">
+  <button type="button" data-theme-toggle aria-pressed="false">Dark mode</button>
+  <div class="sizes" role="group" aria-label="Text size"><button type="button" data-size="small" aria-label="Small text">A−</button><button type="button" data-size="medium" aria-label="Medium text" aria-pressed="true">A</button><button type="button" data-size="large" aria-label="Large text">A+</button></div>
+</div></header>
+<main class="auth-shell">
+  <section class="panel">
+    <h1>Sign in</h1>
+    <p>Continue building your management skills.</p>
+    {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+    {% if expired %}<p class="error" role="alert">Your session expired. Sign in again.</p>{% endif %}
+    <form method="post" action="/login">
+      <label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" required>
+      <label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button class="button" type="submit">Sign in</button>
+    </form>
+    <p>New to Manager Blueprint? <a href="/signup">Create an account</a></p>
+  </section>
+</main>
+</body>
+</html>
